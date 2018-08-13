@@ -20,14 +20,26 @@ public class MapGenerator : MonoBehaviour {
 		GenerateMap ();
 	}
 
+	void Update () {
+		if(Input.GetMouseButtonDown(0)) {
+			GenerateMap ();
+		}
+
+	}
+
 	void GenerateMap() {
 		map = new int[width, height];
 		RandomFillMap ();
 
 		for(int i = 0; i<5; i++) {
 			SmoothMap ();
+
+			MeshGenerator meshGen = GetComponent<MeshGenerator> ();
+			meshGen.GenerateMesh (map, 1);
 		}
-	}
+
+		}
+
 	void RandomFillMap() {
 		if (useRandomSeed) {
 			seed = Time.time.ToString ();
@@ -37,8 +49,8 @@ public class MapGenerator : MonoBehaviour {
 
 		for (int x = 0; x<width; x++) {
 			for (int y = 0; y<height; y++) {
-				if(x == 0 || x== with-1 || y == height -1 {
-					map[x,y] = 1
+				if(x == 0 || x== width-1 || y == height -1) {
+					map[x,y] = 1;
 				}
 				map[x,y] = (pseudoRandom.Next(0,100) < randomFillPercent) ? 1:0;
 
@@ -49,7 +61,14 @@ public class MapGenerator : MonoBehaviour {
 	void SmoothMap() {
 		for (int x = 0; x<width; x++) {
 			for (int y = 0; y<height; y++) {
-
+				int neighbourWallTiles = GetSurroundingWallCount (x, y);
+				if(neighbourWallTiles > 4) {
+						map[x,y] = 1;
+						
+				}
+				else if(neighbourWallTiles < 4) {
+					map[x,y] = 0;
+				}
 			}
 		}
 	}
@@ -58,22 +77,24 @@ public class MapGenerator : MonoBehaviour {
 		int wallCount = 0;
 		for(int neighborX = gridX - 1; neighborX <= gridX+ 1; neighborX++) {
 		for(int neighborY = gridY - 1; neighborY <= gridY + 1; neighborY++) {
-			if(neighborX != gridX || neighborY != gridY) {
+
 				if(neighborX >= 0 && neighborX < width && neighborY >= 0 && neighborY < height) {
-				
+					if(neighborX != gridX || neighborY != gridY) {
 				wallCount += map[neighborX, neighborY];
 				}
 			}
 			else {
 				wallCount ++;
-				//Stopped at 17:30
+				
 			}
 			
 		}
 		}
+						return wallCount;
 	}
 
 	void OnDrawGizmos() {
+		/*
 		if (map != null) {
 			for (int x = 0; x < width; x++) {
 				for (int y = 0; y < height; y++) {
@@ -83,5 +104,6 @@ public class MapGenerator : MonoBehaviour {
 				}
 			}
 		}
+		*/
 	}
 }
